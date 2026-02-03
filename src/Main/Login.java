@@ -4,100 +4,22 @@
  * and open the template in the editor.
  */
 package Main;
-import config.DBC;
-/**
- *
- * @author USER15
- */
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import config.DBC; // Import your database connection class
+
 public class Login extends javax.swing.JFrame {
 
-   
-    public static boolean isLogout = false;
+    /**
+     * Creates new form Login
+     */
     public Login() {
         initComponents();
-        
-   
-   
-username.setText("Enter Username...");
-username.setForeground(new java.awt.Color(153, 153, 153)); // Gray
-
-username.addFocusListener(new java.awt.event.FocusAdapter() {
-    @Override
-    public void focusGained(java.awt.event.FocusEvent evt) {
-        if (username.getText().equals("Enter Username...")) {
-            username.setText("");
-            username.setForeground(java.awt.Color.BLACK);
-        }
     }
 
-    @Override
-    public void focusLost(java.awt.event.FocusEvent evt) {
-        if (username.getText().isEmpty()) {
-            username.setText("Enter Username...");
-            username.setForeground(new java.awt.Color(153, 153, 153));
-        }
-    }
-});
-
-// ==========================================
-// 2. SETUP EMAIL FIELD (jTextField2)
-// ==========================================
-// Make sure this variable name matches your Email text field!
-email.setText("Enter Email...");
-email.setForeground(new java.awt.Color(153, 153, 153)); // Gray
-
-email.addFocusListener(new java.awt.event.FocusAdapter() {
-    @Override
-    public void focusGained(java.awt.event.FocusEvent evt) {
-        if (email.getText().equals("Enter Email...")) {
-            email.setText("");
-            email.setForeground(java.awt.Color.BLACK);
-        }
-    }
-
-    @Override
-    public void focusLost(java.awt.event.FocusEvent evt) {
-        if (email.getText().isEmpty()) {
-            email.setText("Enter Email...");
-            email.setForeground(new java.awt.Color(153, 153, 153));
-        }
-    }
-});
-
-// ==========================================
-// 3. SETUP PASSWORD FIELD (jPasswordField1)
-// ==========================================
-password.setEchoChar((char)0); // Start visible (so user can read "Enter Password")
-password.setText("Enter Password");
-password.setForeground(new java.awt.Color(153, 153, 153)); // Gray
-
-password.addFocusListener(new java.awt.event.FocusAdapter() {
-    @Override
-    public void focusGained(java.awt.event.FocusEvent evt) {
-        String pass = String.valueOf(password.getPassword());
-        if (pass.equals("Enter Password")) {
-            password.setText("");
-            password.setForeground(java.awt.Color.BLACK);
-            password.setEchoChar('*'); // Hide password with stars
-        }
-    }
-
-    @Override
-    public void focusLost(java.awt.event.FocusEvent evt) {
-        String pass = String.valueOf(password.getPassword());
-        if (pass.length() == 0 || pass.equals("")) {
-            password.setText("Enter Password");
-            password.setForeground(new java.awt.Color(153, 153, 153));
-            password.setEchoChar((char)0); // Make text visible again
-        }
-    }
-});
-
-
-setSize(750, 500);
-setLocationRelativeTo(null); // Center screen
-    }
-String status;
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -108,94 +30,259 @@ String status;
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jDesktopPane1 = new javax.swing.JDesktopPane();
+        jTextField1 = new javax.swing.JTextField();
+        jTextField2 = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        username = new javax.swing.JTextField();
-        email = new javax.swing.JTextField();
-        password = new javax.swing.JPasswordField();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(0, 0, 0));
 
-        jPanel1.setBackground(new java.awt.Color(102, 102, 102));
+        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
         jPanel1.setLayout(null);
 
-        jPanel2.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel3.setBackground(new java.awt.Color(0, 0, 153));
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Logooo.jpg"))); // NOI18N
+        jLabel5.setText("jLabel5");
+
+        jPanel4.setBackground(new java.awt.Color(0, 0, 0));
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 521, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 8, Short.MAX_VALUE)
+        );
+
+        jPanel5.setBackground(new java.awt.Color(0, 0, 0));
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 7, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(51, 51, 51)
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel1.add(jPanel3);
+        jPanel3.setBounds(0, 0, 640, 80);
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+
+        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField2ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Login");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setForeground(new java.awt.Color(51, 102, 255));
+        jLabel1.setText("Sign up");
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel1MouseClicked(evt);
+            }
+        });
+
+        jLabel2.setText("Don't have account?");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 700, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(39, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addGap(22, 22, 22))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(72, 72, 72)
+                        .addComponent(jButton1))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                            .addComponent(jTextField2))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 70, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel2);
-        jPanel2.setBounds(0, 0, 700, 70);
-
-        jLabel1.setIcon(new javax.swing.ImageIcon("C:\\Users\\USER15\\Downloads\\New folder\\GUI\\Logoo.jpg")); // NOI18N
-        jLabel1.setText("jLabel1");
-        jDesktopPane1.add(jLabel1);
-        jLabel1.setBounds(70, 120, 200, 130);
-
-        username.setText("jTextField1");
-        jDesktopPane1.add(username);
-        username.setBounds(390, 100, 250, 30);
-
-        email.setText("jTextField2");
-        jDesktopPane1.add(email);
-        email.setBounds(390, 130, 250, 30);
-
-        password.setText("jPasswordField1");
-        jDesktopPane1.add(password);
-        password.setBounds(390, 160, 250, 30);
-
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("register");
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel2MouseClicked(evt);
-            }
-        });
-        jDesktopPane1.add(jLabel2);
-        jLabel2.setBounds(390, 190, 90, 30);
-
-        jPanel1.add(jDesktopPane1);
-        jDesktopPane1.setBounds(0, 70, 700, 360);
+        jPanel2.setBounds(210, 140, 200, 175);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 700, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-     String qry = "INSERT INTO Tbl_user ( username, email, password ) VALUES ( ?, ?, ?)";
-      DBC con = new DBC();  
-     con.addRecord (qry, username.getText(), email.getText(), password.getText() );
-     username.setText("");
-     email.setText("");
-     password.setText("");
-     javax.swing.JOptionPane.showMessageDialog(this, "Account Successfully Registered!");
-    
-           // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel2MouseClicked
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+        Register load = new Register();
+        load.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jLabel1MouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String username = jTextField1.getText();
+        String password = jTextField2.getText();
+
+        // 1. CHECK FOR EMPTY FIELDS
+        if(username.isEmpty() || password.isEmpty()){
+            JOptionPane.showMessageDialog(this, "Please enter both username and password.");
+            return;
+        }
+
+        // 2. STATIC DEVELOPER ACCOUNT (Hardcoded)
+        if (username.equals("dev") && password.equals("dev123")) {
+            Admin dev = new Admin();
+            dev.setVisible(true);
+            this.dispose();
+
+        } else {
+            // 3. DATABASE CHECK (For Admin, User, Driver)
+            try {
+                // Use your existing DBC class to get the connection
+                Connection con = DBC.connectDB();
+
+                // Query to find the user
+                String sql = "SELECT * FROM Tbl_user WHERE username = ? AND password = ?";
+                PreparedStatement pst = con.prepareStatement(sql);
+
+                pst.setString(1, username);
+                pst.setString(2, password);
+
+                ResultSet rs = pst.executeQuery();
+
+                if (rs.next()) {
+                    // User found! Now check the u_type
+                    String type = rs.getString("u_type"); // Get the value from u_type column
+                    String status = rs.getString("status"); // Optional: Check status
+
+                    if(status.equalsIgnoreCase("Active") || status.equalsIgnoreCase("Registered")){
+
+                        // Route to the correct dashboard based on u_type
+                        if(type.equalsIgnoreCase("Admin")){
+                            Admin ad = new Admin();
+                            ad.setVisible(true);
+                            this.dispose();
+                        } else if(type.equalsIgnoreCase("User")){
+                            User us = new User();
+                            us.setVisible(true);
+                            this.dispose();
+                        } else if(type.equalsIgnoreCase("Driver")){
+                            Driver dr = new Driver();
+                            dr.setVisible(true);
+                            this.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Error: Unknown Account Type.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Account is not Active.");
+                    }
+
+                } else {
+                    // No matching user found in database
+                    JOptionPane.showMessageDialog(this, "Invalid Username or Password.");
+                }
+
+                // Close resources
+                rs.close();
+                pst.close();
+                con.close();
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage());
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField2ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -233,13 +320,16 @@ String status;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField email;
-    private javax.swing.JDesktopPane jDesktopPane1;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPasswordField password;
-    private javax.swing.JTextField username;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 }
