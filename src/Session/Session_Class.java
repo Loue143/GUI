@@ -11,6 +11,9 @@ import Main.Super_Admin;
 import Main.User;
 import java.sql.*;
 import javax.swing.*;
+import java.awt.Image;
+import java.io.File;
+import javax.swing.ImageIcon;
 
 
 public class Session_Class extends javax.swing.JFrame {
@@ -28,9 +31,6 @@ public class Session_Class extends javax.swing.JFrame {
 
     // 2. The Simple Method to Load Data
     private void loadProfile() {
-        // Auto-fix: If ID is 0, we test with ID 1 so you can see results
-        
-
         // *** CHECK THIS PATH IS CORRECT ***
         // Note: Double backslashes "\\" are required!
         String url = "jdbc:sqlite:BBC.db";
@@ -50,6 +50,23 @@ public class Session_Class extends javax.swing.JFrame {
                     jLabel12.setText(rs.getString("password"));
                     jLabel13.setText(rs.getString("status"));
                     jLabel14.setText(rs.getString("u_type"));
+                    
+                    // ==========================================
+                    // --- NEW CODE: LOAD PROFILE PICTURE ---
+                    // ==========================================
+                    String dbImagePath = rs.getString("image_path");
+                    if (dbImagePath != null && !dbImagePath.isEmpty()) {
+                        File imgFile = new File(dbImagePath);
+                        if (imgFile.exists()) {
+                            ImageIcon originalIcon = new ImageIcon(dbImagePath);
+                            Image originalImage = originalIcon.getImage();
+                            // Scaling it to fit the 102x105 dimensions of jLabel16
+                            Image scaledImage = originalImage.getScaledInstance(102, 105, Image.SCALE_SMOOTH);
+                            jLabel16.setIcon(new ImageIcon(scaledImage));
+                        }
+                    }
+                    // ==========================================
+                    
                 } else {
                     jLabel8.setText("User Not Found");
                 }

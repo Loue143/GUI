@@ -7,9 +7,16 @@ package Session;
 
 import java.sql.*;
 import javax.swing.*;
+import java.awt.Image;
+import java.io.File;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Session_Class_Edit extends javax.swing.JFrame {
-
+    
+private String selectedImagePath = null;
+    
     public Session_Class_Edit() {
         initComponents();
         
@@ -45,6 +52,20 @@ public class Session_Class_Edit extends javax.swing.JFrame {
                     jTextField10.setText(rs.getString("username"));           // Username
                     jTextField11.setText(rs.getString("password"));           // Password
                     jTextField2.setText(rs.getString("status"));              // Status
+                    
+                    String dbImagePath = rs.getString("image_path");
+                    if (dbImagePath != null && !dbImagePath.isEmpty()) {
+                        selectedImagePath = dbImagePath; // Store it globally in case they update without changing the picture
+                        
+                        File imgFile = new File(dbImagePath);
+                        if (imgFile.exists()) {
+                            ImageIcon originalIcon = new ImageIcon(dbImagePath);
+                            Image originalImage = originalIcon.getImage();
+                            // Scaling it to fit the 102x105 dimensions of your jLabel16
+                            Image scaledImage = originalImage.getScaledInstance(102, 105, Image.SCALE_SMOOTH);
+                            jLabel16.setIcon(new ImageIcon(scaledImage));
+                        }
+                    } // <--- THIS WAS THE MISSING BRACE!
                     
                     // Note: You might need to combine f_name and l_name or handle them separately 
                     // depending on how many text fields you have designed.
@@ -131,6 +152,11 @@ public void displayUserID() {
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/PPD.jpg"))); // NOI18N
+        jLabel16.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel16MouseClicked(evt);
+            }
+        });
         jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 102, 105));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -305,13 +331,15 @@ public void displayUserID() {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(134, 134, 134)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 503, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel15)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(134, 134, 134)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 503, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel15))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -381,8 +409,9 @@ public void displayUserID() {
 
         // 4. Update the database
         String url = "jdbc:sqlite:BBC.db"; 
-        // We are updating f_name, email, username, password, and status for the specific logged-in user
-        String updateSql = "UPDATE Tbl_user SET f_name = ?, email = ?, username = ?, password = ?, status = ? WHERE userid = ?";
+        
+        // CHANGED: Added image_path = ? to the SQL query
+        String updateSql = "UPDATE Tbl_user SET f_name = ?, email = ?, username = ?, password = ?, status = ?, image_path = ? WHERE userid = ?";
 
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement pstmt = conn.prepareStatement(updateSql)) {
@@ -393,7 +422,12 @@ public void displayUserID() {
             pstmt.setString(3, newUsername);
             pstmt.setString(4, newPassword);
             pstmt.setString(5, newStatus);
-            pstmt.setInt(6, Session.Session_Class.loggedUserId); // Only update the person currently logged in
+            
+            // CHANGED: Bind the image path variable
+            pstmt.setString(6, selectedImagePath); 
+            
+            // CHANGED: userid index moved to 7 because image_path is now 6
+            pstmt.setInt(7, Session.Session_Class.loggedUserId); 
 
             int rowsUpdated = pstmt.executeUpdate();
 
@@ -427,6 +461,44 @@ public void displayUserID() {
         load.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jLabel8MouseClicked
+
+    private void jLabel16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseClicked
+        JFileChooser fileChooser = new JFileChooser();
+    
+    // 2. Set a filter so the user can only see and select image files
+    FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "png", "jpeg", "gif");
+    fileChooser.setFileFilter(filter);
+    
+    // 3. Show the "Open File" dialog
+    // 'this' centers the dialog over your current window
+    int result = fileChooser.showOpenDialog(this); 
+    
+    // 4. Check if the user selected a file and clicked "Open"
+    if (result == JFileChooser.APPROVE_OPTION) {
+        File selectedFile = fileChooser.getSelectedFile();
+        String imagePath = selectedFile.getAbsolutePath();
+        
+        // 5. Load the original image
+        ImageIcon originalIcon = new ImageIcon(imagePath);
+        
+        
+        // 6. Scale the image to fit jLabel16 perfectly
+        Image originalImage = originalIcon.getImage();
+        // Uses the current width and height of jLabel16
+        Image scaledImage = originalImage.getScaledInstance(jLabel16.getWidth(), jLabel16.getHeight(), Image.SCALE_SMOOTH);
+        
+        // 7. Set the newly scaled image to the JLabel
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        jLabel16.setIcon(scaledIcon);
+        
+        selectedImagePath = imagePath;
+        
+        /* * OPTIONAL: If you are going to save this to a database when the user clicks 
+         * your "Update" button, you should store the 'imagePath' in a global String 
+         * variable here so your Update button action can access it.
+         */
+    }
+    }//GEN-LAST:event_jLabel16MouseClicked
 
     /**
      * @param args the command line arguments

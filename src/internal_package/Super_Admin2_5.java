@@ -487,12 +487,18 @@ public class Super_Admin2_5 extends javax.swing.JInternalFrame {
             Connection conn = DriverManager.getConnection(url);
             
             String sql;
-            // Dynamically build the SQL statement based on the pull-out status
             if (isPullingOut) {
-                // If pulling out, set dr_ID and De_ID to NULL in addition to other updates
+                // 1. Update bus to inactive and wipe driver & destination IDs
+                // (Setting De_ID to NULL here automatically fires the SQLite trigger to subtract the bus count!)
                 sql = "UPDATE tbl_bus SET Plate_No = ?, Bus_type = ?, seats = ?, Status = ?, dr_ID = NULL, De_ID = NULL WHERE Bus_ID = ?";
+                
+                // 2. Tell the driver table that this bus has been taken away
+                String driverReleaseSql = "UPDATE tbl_driver SET Bus_ID = NULL, Status = 'Waiting' WHERE Bus_ID = ?";
+                try (PreparedStatement pstDriver = conn.prepareStatement(driverReleaseSql)) {
+                    pstDriver.setInt(1, Integer.parseInt(selectedBusId));
+                    pstDriver.executeUpdate();
+                }
             } else {
-                // Standard update
                 sql = "UPDATE tbl_bus SET Plate_No = ?, Bus_type = ?, seats = ?, Status = ? WHERE Bus_ID = ?";
             }
             
@@ -500,9 +506,9 @@ public class Super_Admin2_5 extends javax.swing.JInternalFrame {
             
             pstmt.setString(1, plateNo);
             pstmt.setString(2, busType);
-            pstmt.setInt(3, Integer.parseInt(seats)); // Ensure seats is parsed as an integer
+            pstmt.setInt(3, Integer.parseInt(seats)); 
             pstmt.setString(4, newStatus);
-            pstmt.setInt(5, Integer.parseInt(selectedBusId)); // Match exactly which bus to update
+            pstmt.setInt(5, Integer.parseInt(selectedBusId)); 
             
             pstmt.executeUpdate();
             
@@ -512,20 +518,18 @@ public class Super_Admin2_5 extends javax.swing.JInternalFrame {
             conn.close();
             
             // 5. Refresh the UI
-            fetchData(""); // Refresh the JTable 
+            fetchData(""); 
             
-            // Clear inputs so it's ready for the next action
             jTextField1.setText("");
             jTextField4.setText("");
-            selectedBusId = null; // Clear the selected ID globally
+            selectedBusId = null; 
             
-            // Uncheck the radio buttons
             if(bgBusType != null) bgBusType.clearSelection(); 
             if(bgStatus != null) bgStatus.clearSelection();  
             
             jRadioButton4.setEnabled(false);
             jRadioButton1.setEnabled(false);
-            Users.clearSelection(); // Deselect the row in the table
+            Users.clearSelection(); 
             
         } catch (NumberFormatException nfe) {
             JOptionPane.showMessageDialog(this, "Seat capacity must be a valid number.");

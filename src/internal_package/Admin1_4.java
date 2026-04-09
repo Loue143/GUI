@@ -51,9 +51,10 @@ public class Admin1_4 extends javax.swing.JInternalFrame {
         DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
         model.setRowCount(0); // Clear existing rows
 
-        // Added LIKE clauses to filter by ID, Plate No, or Type
+        // FIXED: Added "Status != 'Inactive'" to the WHERE clause
         String sql = "SELECT Bus_ID, Plate_No, Bus_type, seats FROM tbl_bus "
-                   + "WHERE dr_ID IS NULL AND (Bus_ID LIKE ? OR Plate_No LIKE ? OR Bus_type LIKE ? OR seats LIKE ?)";
+                   + "WHERE dr_ID IS NULL AND Status != 'Inactive' "
+                   + "AND (Bus_ID LIKE ? OR Plate_No LIKE ? OR Bus_type LIKE ? OR seats LIKE ?)";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -141,7 +142,6 @@ public class Admin1_4 extends javax.swing.JInternalFrame {
         String busIdText = jTextField1.getText().trim();
         String driverIdText = jTextField2.getText().trim();
 
-        // 1. Validate that the fields are not empty
         if (busIdText.isEmpty() || driverIdText.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter both Bus ID and Driver ID.", "Input Error", JOptionPane.WARNING_MESSAGE);
             return;
@@ -156,47 +156,44 @@ public class Admin1_4 extends javax.swing.JInternalFrame {
             return;
         }
 
-        // SQL queries for the updates
+        // FIXED: Now we are also setting the Bus_ID on the driver table, not just the status!
         String updateBusSql = "UPDATE tbl_bus SET dr_ID = ? WHERE Bus_ID = ?";
-        String updateDriverSql = "UPDATE tbl_driver SET Status = 'Assigned' WHERE dr_ID = ?";
+        String updateDriverSql = "UPDATE tbl_driver SET Bus_ID = ?, Status = 'Assigned' WHERE dr_ID = ?";
 
         try (Connection conn = getConnection()) {
-            // 2. Disable auto-commit to use a transaction
             conn.setAutoCommit(false);
 
             try (PreparedStatement pstmtBus = conn.prepareStatement(updateBusSql);
                  PreparedStatement pstmtDriver = conn.prepareStatement(updateDriverSql)) {
 
-                // 3. Execute Bus update
+                // Execute Bus update
                 pstmtBus.setInt(1, driverId);
                 pstmtBus.setInt(2, busId);
                 int busRowsAffected = pstmtBus.executeUpdate();
 
-                // 4. Execute Driver update
-                pstmtDriver.setInt(1, driverId);
+                // FIXED: Execute Driver update (Pass both Bus ID and Driver ID)
+                pstmtDriver.setInt(1, busId);
+                pstmtDriver.setInt(2, driverId);
                 int driverRowsAffected = pstmtDriver.executeUpdate();
 
-                // 5. Check if both updates were successful
                 if (busRowsAffected > 0 && driverRowsAffected > 0) {
-                    conn.commit(); // Save the changes to the database
+                    conn.commit(); 
                     JOptionPane.showMessageDialog(this, "Driver successfully assigned to the Bus!");
                     
-                    // Clear the input fields
                     jTextField1.setText("");
                     jTextField2.setText("");
                     
-                    // Refresh the tables to hide the assigned driver and bus
                     loadBusData("");
                     loadDriverData("");
                 } else {
-                    conn.rollback(); // Cancel the transaction if something went wrong
+                    conn.rollback(); 
                     JOptionPane.showMessageDialog(this, "Assignment failed. Please check if the IDs exist.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (SQLException ex) {
-                conn.rollback(); // Cancel if there's an SQL error
+                conn.rollback(); 
                 throw ex;
             } finally {
-                conn.setAutoCommit(true); // Reset auto-commit
+                conn.setAutoCommit(true); 
             }
 
         } catch (SQLException e) {

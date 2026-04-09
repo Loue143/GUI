@@ -47,15 +47,17 @@ public class User1_4 extends javax.swing.JFrame {
             currentUserId = 10;
         }
 
+        // UPDATED SQL: Added LEFT JOIN tbl_seat and changed bk.B_id to s.SeatNo
         String sql = "SELECT u.f_name AS fname, u.l_name AS lname, " +
                      "d.Name AS Destination, " +
                      "bk.Date AS BDate, " +
-                     "bk.B_id AS SeatNo, " +
+                     "s.SeatNo AS SeatNo, " +  // <--- Pulling actual seat number here
                      "bk.Price AS BPrice, " +
                      "bk.Plate AS PlateNo " +
                      "FROM tbl_booking bk " +
                      "LEFT JOIN Tbl_user u ON bk.userid = u.userid " +
                      "LEFT JOIN tbl_destinations d ON bk.De_ID = d.De_ID " +
+                     "LEFT JOIN tbl_seat s ON bk.S_id = s.S_id " + // <--- Joining the seat table
                      "WHERE bk.userid = ? " +
                      "ORDER BY bk.B_id DESC"; 
 
@@ -80,7 +82,10 @@ public class User1_4 extends javax.swing.JFrame {
                     String lName = rs.getString("lname") != null ? rs.getString("lname") : "Passenger";
                     String dest = rs.getString("Destination") != null ? rs.getString("Destination") : "Unknown Dest";
                     String date = rs.getString("BDate");
+                    
+                    // This now pulls the actual seat number from tbl_seat!
                     int seatNo = rs.getInt("SeatNo"); 
+                    
                     String priceStr = rs.getString("BPrice");
                     String plate = rs.getString("PlateNo") != null ? rs.getString("PlateNo") : "N/A";
 
